@@ -44,6 +44,12 @@ export default function App() {
   const navigation = useNavigation();
   const submit = useSubmit();
 
+  const searching =
+    navigation.location &&
+    new URLSearchParams(navigation.location.search).has(
+      "q"
+    );  
+
   useEffect(() => {
     const searchField = document.getElementById("q");
     if (searchField instanceof HTMLInputElement) {
@@ -71,13 +77,18 @@ export default function App() {
               role="search">
               <input
                 aria-label="Search contacts"
+                className={searching ? "loading" : ""}
                 defaultValue={q || ""}
                 id="q"
                 name="q"
                 placeholder="Search"
                 type="search"
               />
-              <div id="search-spinner" aria-hidden hidden={true} />
+              <div
+                aria-hidden
+                hidden={!searching}
+                id="search-spinner"
+              />            
             </Form>
             <Form method="post">
               <button type="submit">New</button>
@@ -121,7 +132,9 @@ export default function App() {
         </div>
         <div 
           className={
-            navigation.state === "loading" ? "loading" : ""
+            navigation.state === "loading" && !searching
+              ? "loading" 
+              : ""
           }        
           id="detail">
           <Outlet />
